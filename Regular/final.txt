@@ -1,0 +1,77 @@
+import mysql.connector
+import datetime
+import practice
+
+mydb=mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="database@9440672439",
+    database="library"
+)
+
+
+def firstentry(reg):
+    mycursor = mydb.cursor()
+    sql = "insert into digital(Reg_no, intime, outtime) values(%s,%s,%s)"
+    x = datetime.datetime.now()
+    values = (reg, x, x)
+    mycursor.execute(sql, values)
+    mydb.commit()
+
+
+def check(reg):
+    mycursor = mydb.cursor()
+    sql = "select * from digital"
+    mycursor.execute(sql)
+    myresult=mycursor.fetchall()
+    #print(myresult)
+    if len(myresult)==0:
+        return 0
+    k=0
+    for i in myresult:
+        k=k+1
+        #print(len(myresult),k,myresult[-1][1])
+        if i[1] == reg and i[2] == i[3]:
+            return 1
+        elif k==len(myresult):
+            return 0
+
+
+
+def leave(reg):
+    mycursor = mydb.cursor()
+    t="select * from digital"
+    mycursor.execute(t)
+    myalldata=mycursor.fetchall()
+    for j in myalldata:
+        #print(j[2],j[3])
+        if j[2] == j[3]:
+            y = datetime.datetime.now()
+            sql = "update digital set outtime=%s where reg_no=%s and intime=outtime"
+            val = (y, reg)
+            mycursor.execute(sql,val)
+            mydb.commit()
+            break
+    sql = "select * from digital"
+    mycursor.execute(sql)
+    myresult=mycursor.fetchall()
+    myresult.sort(reverse=True)
+    for i in myresult:
+        if i[1]==reg:
+            print("In time :",i[2], "Out time :",i[3])
+            print("Updated")
+            break
+
+
+for i in range(50):
+    reg = input("Enter your Reg no : ")
+    p=input("Enter password : ")
+    y=search(reg,p)
+    if y==0:
+        create(reg)
+    x=check(reg)
+    if x==0:
+        firstentry(reg)
+    elif x==1:
+        leave(reg)
+    print("Thank you")
