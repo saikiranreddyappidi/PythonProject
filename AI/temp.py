@@ -58,29 +58,16 @@ class Utility:
         x, y = self.current = current
         temp = [(x - 1, y - 1), (x - 1, y), (x - 1, y + 1), (x, y - 1), (x, y + 1), (x + 1, y - 1), (x + 1, y),
                 (x + 1, y + 1)]
-        valid_moves = []
-
         for i in temp:
             if i != self.grid_obj.prev and self.grid_obj.info(i) and i not in self.closed:
-                valid_moves.append(i)
-
+                self.open.append(i)
             if i == self.grid_obj.goal:
                 self.open.append(i)
                 print("Goal Reached")
                 return i
-
-        if not valid_moves:
-            if self.closed:
-                last_move = self.closed[-1]
-                self.closed.pop()
-                return last_move
-            else:
-                print("No valid moves left.")
-                return current
-
         next_step = ()
         min_cost = 100
-        for i in valid_moves:
+        for i in self.open:
             if self.grid_obj.get_cost(i) < min_cost:
                 next_step = i
                 min_cost = self.grid_obj.get_cost(i)
@@ -92,16 +79,13 @@ class Utility:
 
     def g_n(self, to: tuple) -> int:
         var = (self.current, to)
-        cost = self.grid_obj.get_cost(to)  # Use the actual path cost
-        self.pathTracker[var] = cost
+        cost = self.pathTracker[var] = randint(0, 25)
         return cost
 
     def h_n(self, to: tuple) -> float:
         if to == self.grid_obj.goal:
             return 0
-        dx = abs(to[0] - self.grid_obj.goal[0])
-        dy = abs(to[1] - self.grid_obj.goal[1])
-        return dx + dy
+        return dist(to, self.grid_obj.goal)
 
 
 def main():
