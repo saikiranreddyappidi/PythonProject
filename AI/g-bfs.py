@@ -15,6 +15,8 @@ class grid:
         self.start = tuple(map(int, input("Enter start grid coordinates: ").split()))
         self.goal = tuple(map(int, input("Enter goal grid coordinates: ").split()))
         self.prev = None
+        self.path_cost = {}
+        self.cost()
 
     def info(self, coordinates: tuple) -> bool:
         try:
@@ -26,34 +28,53 @@ class grid:
             print("Invalid Coordinates", coordinates)
             return False
 
+    def cost(self):
+        rows = len(self.graph)
+        col = len(self.graph[0])
+        linear = []
+        for i in range(rows):
+            for j in range(col):
+                linear.append((i, j))
+        k = 0
+        for i in linear:
+            self.path_cost[i] = randint(5, 55 - k) if i != self.goal else 0
+            k += 1
+
+    def get_cost(self, frm: tuple) -> int:
+        return self.path_cost[frm]
+
 
 class Utility:
     def __init__(self, grid_obj: grid):
-        self.arr = []
         self.current = ()
         self.cost = 0
         self.pathTracker = {}
         self.grid_obj = grid_obj
+        self.closed = []
+        self.open = [self.grid_obj.start]
         # self.prev = self.current
 
     def next_move(self, current: tuple) -> tuple:
         x, y = self.current = current
         temp = [(x - 1, y - 1), (x - 1, y), (x - 1, y + 1), (x, y - 1), (x, y + 1), (x + 1, y - 1), (x + 1, y),
                 (x + 1, y + 1)]
-        costs = []
         for i in temp:
-            if i != self.grid_obj.prev and self.grid_obj.info(i):
-                self.arr.append(i)
-                costs.append(self.h_n(i) + self.h_n(i))
+            if i != self.grid_obj.prev and self.grid_obj.info(i) and i not in self.closed:
+                self.open.append(i)
             if i == self.grid_obj.goal:
-                self.arr.append(i)
-                costs.append(self.h_n(i) + self.h_n(i))
+                self.open.append(i)
                 print("Goal Reached")
                 return i
-        next_step = self.arr[costs.index(min(costs))]
+        next_step = ()
+        min_cost = 100
+        for i in self.open:
+            if self.grid_obj.get_cost(i) < min_cost:
+                next_step = i
+                min_cost = self.grid_obj.get_cost(i)
+        self.closed.append(current)
         print("prev", self.grid_obj.prev, "current", self.current, "Next step: ", next_step)
+        self.open.clear()
         self.grid_obj.prev = self.current
-        self.arr.clear()
         return next_step
 
     def g_n(self, to: tuple) -> int:
@@ -77,9 +98,10 @@ def main():
             break
         util_obj.current = util_obj.next_move(util_obj.current)
         final_path.append(util_obj.current)
-        # print("Current: ", util_obj.current)
+        print("Current: ", util_obj.current)
     print("Path: ", final_path)
-    print("Cost: ", util_obj.pathTracker)
+    print("Closed: ", util_obj.closed)
+    print(util_obj.grid_obj.path_cost)
     for i in range(len(grid_obj.graph)):
         for j in range(len(grid_obj.graph[0])):
             print("*", end=" ") if (i, j) in final_path else print("0", end=" ")
