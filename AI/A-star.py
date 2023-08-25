@@ -43,7 +43,6 @@ class Utility:
         costs = []
         for i in temp:
             if i != self.grid_obj.prev and self.grid_obj.info(i):
-                print(self.grid_obj.graph[i[0]][i[1]])
                 self.arr.append(i)
                 costs.append(self.h_n(i) + self.h_n(i))
             if i == self.grid_obj.goal:
@@ -78,7 +77,7 @@ def main():
             break
         util_obj.current = util_obj.next_move(util_obj.current)
         final_path.append(util_obj.current)
-        print("Current: ", util_obj.current)
+        # print("Current: ", util_obj.current)
     print("Path: ", final_path)
     print("Cost: ", util_obj.pathTracker)
 
