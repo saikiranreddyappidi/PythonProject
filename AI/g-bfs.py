@@ -1,5 +1,4 @@
 from random import randint
-from math import dist
 
 
 class grid:
