@@ -1,6 +1,3 @@
-import time
-
-
 def Cost(H, condition, weight=1):
     cost = {}
     if 'AND' in condition:
@@ -54,32 +51,17 @@ def shortest_path(Start, Updated_cost, H):
     return Path
 
 
-# Gather user input for H values
-try:
-    H = {}
-    nodes = input("Enter node names separated by spaces: ").split()
-    for node in nodes:
-        H[node] = int(input(f"Enter H({node}): "))
+H = {'A': -1, 'B': 5, 'C': 2, 'D': 4, 'E': 7, 'F': 9, 'G': 3, 'H': 0, 'I': 0, 'J': 0}
 
-    # Gather user input for conditions
-    Conditions = {}
-    while True:
-        node = input("Enter node name (or 'done' to finish): ")
-        if node == 'done':
-            break
-        condition_type = input(f"Enter condition type for {node} ('OR' or 'AND'): ")
-        if condition_type not in ['OR', 'AND']:
-            print("Invalid condition type. Please enter 'OR' or 'AND'.")
-            continue
-        sub_conditions = input(f"Enter sub-nodes for {node} separated by spaces: ").split()
-        Conditions[node] = {condition_type: sub_conditions}
-    start = time.time()
-    weight = int(input("Enter weight: "))
-    print('Updated Cost :')
-    Updated_cost = update_cost(H, Conditions, weight)
-    print('*' * 75)
-    print('Shortest Path :\n', shortest_path('A', Updated_cost, H))
-    stop= time.time()
-    print("Execution time: ",stop-start)
-except:
-    print("Invalid inputs: Restart the program")
+Conditions = {
+    'A': {'OR': ['B'], 'AND': ['C', 'D']},
+    'B': {'OR': ['E', 'F']},
+    'C': {'OR': ['G'], 'AND': ['H', 'I']},
+    'D': {'OR': ['J']}
+}
+
+weight = 1
+print('Updated Cost :')
+Updated_cost = update_cost(H, Conditions, weight=1)
+print('*' * 75)
+print('Shortest Path :\n', shortest_path('A', Updated_cost, H))
